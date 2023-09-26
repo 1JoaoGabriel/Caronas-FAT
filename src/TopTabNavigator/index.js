@@ -8,7 +8,7 @@ const TabNavigator = () => {
     <Tab.Navigator
       tabBarOptions={{
         labelStyle: { fontSize: 14 }, 
-        tabStyle: { width: 120, height: 40,  }, 
+        tabStyle: { width: 120, height: 45,  }, 
         showLabel: true,
         style: { backgroundColor: 'white'}, 
         indicatorStyle: { backgroundColor: 'black' }, 

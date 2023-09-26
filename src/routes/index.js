@@ -4,7 +4,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import Login from '../pages/Login';
 import Home from '../pages/Home';
 import Registro from '../pages/Registro';
-import Dashbord from '../pages/Dashbord'; // Corrigido para "Dashbord"
+import Dashbord from '../pages/Dashbord'; 
 import Motoristas from '../pages/Motoristas';
 import DriverInfo from '../pages/DriverInfo';
 import SolicitarCarona from '../pages/SolicitarCarona';
@@ -30,9 +30,9 @@ export default function Routes() {
         name="DashbordAndMotoristas"
         component={TabNavigator}
         options={{
-          headerTransparent: true, // Tornar o cabeçalho transparente
+          headerTransparent: true, 
           title: '',
-          headerBackVisible: false, // Título da página
+          headerBackVisible: false, 
           headerShown: false
           
         }}

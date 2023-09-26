@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+// import axios from "axios";
 
 const RegisterScreen = () => {
   const [username, setUsername] = useState('');
@@ -41,32 +42,94 @@ const RegisterScreen = () => {
     });
 
     if (!result.cancelled) {
-      setImage(result.uri);
+      setImage(result.assets[0].uri);
     }
   };
 
   const handleRegister = () => {
     if (!username || !email || !password || !image) {
+      
       setAlertMessage('Por favor, preencha todos os campos.');
       setShowAlert(true);
     } else if (!acceptedTerms) {
       setAlertMessage('Você precisa aceitar os termos e condições.');
       setShowAlert(true);
     } else {
-      // Simulando uma chamada API (substitua por sua lógica real)
-      const newUser = { username, email, password, profileImage: image };
-      // Aqui você pode enviar os dados do novo usuário para o servidor
-
+        fetchData();
+      
       setAlertMessage('Registro bem-sucedido. Você pode fazer login agora.');
       setShowAlert(true);
-
-      // Navegue para a tela de Motoristas e passe as informações do usuário
-      navigation.navigate('Motoristas', { user: newUser });
     }
+  };
+
+  const fetchData = async () => {
+    try {
+      const apiUrl = 'http://127.0.0.1:8000/rides/api/profiles/';
+      
+      const userData = {
+        senha: password,
+        nome: "Joao",
+        email: email,
+        diretorio: image,
+        user: 4,
+        placa_carro: "",
+        cnh: null,
+      };      
+      
+  
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+  
+      if (response.ok) {
+        // A solicitação foi bem-sucedida, agora você pode processar os dados da resposta
+        const data = await response.json();
+        console.log('Registro bem-sucedido:', data);
+  
+      } else {
+        // A solicitação falhou, lide com o erro
+        console.error('Registro falhou:', response.status);
+      }
+    } 
+      catch (error) {
+        console.error('Erro ao fazer a solicitação à API:', error);
+    }
+  //   const profile_new = {
+  //     nome: username,
+  //     diretorio: image,
+  //     email: email,
+  //     senha: password,
+  //     cnh: null,
+  //     placa_carro: "",
+  //     user: 4
+  // };
+  // axios.post('http://127.0.0.1:8000/rides/api/profiles/', profile_new, {
+  //     headers: {
+  //         'Content-Type': 'application/json'
+  //     }
+  // })
+  // .then ((response) => {
+  //   console.log(response);
+  // }) 
+
+  //   console.log()
   };
 
   const closeAlert = () => {
     setShowAlert(false);
+  };
+  
+  const handleEmailChange = (e) => {
+    setEmail(e); 
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e);
   };
 
   return (
@@ -76,6 +139,7 @@ const RegisterScreen = () => {
     >
       <StatusBar backgroundColor="#1976D2" barStyle="light-content" />
       <View style={styles.imageContainer}>
+          <Text style={styles.header}>Registro</Text>
         <TouchableOpacity onPress={pickImage} style={styles.imageButton}>
           {image ? (
             <Image source={{ uri: image }} style={[styles.circularImage, styles.imageWithBorder]} />
@@ -87,7 +151,6 @@ const RegisterScreen = () => {
           )}
         </TouchableOpacity>
       </View>
-      <Text style={styles.header}>Registro</Text>
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Usuário</Text>
         <View style={styles.inputBox}>
@@ -105,8 +168,7 @@ const RegisterScreen = () => {
         <View style={styles.inputBox}>
           <TextInput
             placeholder="Digite seu email"
-            value={email}
-            onChangeText={setEmail}
+            onChangeText={handleEmailChange}
             style={styles.input}
           />
           <FontAwesome name="envelope" size={24} color="black" style={styles.icon} />
@@ -117,8 +179,7 @@ const RegisterScreen = () => {
         <View style={styles.inputBox}>
           <TextInput
             placeholder="Digite sua senha"
-            value={password}
-            onChangeText={setPassword}
+            onChangeText={handlePasswordChange}
             secureTextEntry={!showPassword}
             style={styles.input}
           />
@@ -127,11 +188,6 @@ const RegisterScreen = () => {
             style={styles.passwordVisibility}
             onPress={() => setShowPassword(!showPassword)}
             >
-              <FontAwesome
-                name={showPassword ? 'eye-slash' : 'eye'}
-                size={24}
-                color="black"
-              />
             </TouchableOpacity>
           )}
           <FontAwesome name="lock" size={24} color="black" style={styles.icon} />
@@ -194,7 +250,7 @@ const styles = StyleSheet.create({
   },
   imageButton: {
     marginTop: 10,
-    marginLeft: -250,
+    marginBottom: 30,
     width: 150,
     height: 150,
     borderRadius: 75,
@@ -212,9 +268,10 @@ const styles = StyleSheet.create({
     borderColor: 'black',
   },
   header: {
-    fontSize: 24,
+    marginVertical: -40,
+    fontSize: 30,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 30,
   },
   inputContainer: {
     width: '95%',

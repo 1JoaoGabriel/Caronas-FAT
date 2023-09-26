@@ -31,27 +31,50 @@ const LoginScreen = () => {
   };
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      setAlertMessage('Por favor, preencha seu email e senha antes de fazer login.');
+      setShowAlert(true);
+      return;
+    }
     setIsLoading(true);
 
-    const user = api.find((user) => user.email === email && user.password === password);
+    try {
+      const loginData = {
+        email: email,
+        password: password,
+      };
 
-    console.log('Email inserido:', email);
-    console.log('Senha inserida:', password);
+      const requestOptions = {
+        method: 'POST', // Usando o método POST para enviar dados de login
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(loginData), // Convertendo os dados para JSON
+      };
 
-    if (user) {
-      setAlertMessage('Login bem-sucedido.');
-      setShowAlert(true);
+      const response = await fetch('http://127.0.0.1:8000/rides/login/', requestOptions);
 
-      if (rememberMe) {
-        const loginTimestamp = Date.now();
-        await AsyncStorage.setItem('loggedInUser', JSON.stringify({ user, loginTimestamp }));
+      if (response.status === 200) {
+        // Login bem-sucedido
+        setAlertMessage('Login bem-sucedido.');
+        setShowAlert(true);
+
+        if (rememberMe) {
+          // Guarde o token de autenticação no AsyncStorage
+          const responseData = await response.json();
+          await AsyncStorage.setItem('authToken', responseData.token);
+        } else {
+          await AsyncStorage.removeItem('authToken');
+        }
+
+        navigation.navigate('DashbordAndMotoristas');
       } else {
-        await AsyncStorage.removeItem('loggedInUser');
+        setAlertMessage('Email ou senha incorretos. Tente novamente.');
+        setShowAlert(true);
       }
-
-      navigation.navigate('DashbordAndMotoristas');
-    } else {
-      setAlertMessage('Email ou senha incorretos. Tente novamente.');
+    } catch (error) {
+      console.error('Erro:', error);
+      setAlertMessage('Erro ao fazer login. Verifique seus dados e tente novamente.');
       setShowAlert(true);
     }
 
@@ -94,7 +117,7 @@ const LoginScreen = () => {
       const { loginTimestamp } = JSON.parse(loggedInUser);
       const currentTime = Date.now();
       const timeDifference = currentTime - loginTimestamp;
-      const thirtyMinutesInMilliseconds = 30 * 60 * 1000; // 30 minutos em milissegundos
+      const thirtyMinutesInMilliseconds = 30 * 60 * 1000;
 
       if (timeDifference > thirtyMinutesInMilliseconds) {
         await AsyncStorage.removeItem('loggedInUser');
@@ -103,7 +126,6 @@ const LoginScreen = () => {
   };
 
   useEffect(() => {
-    // Verificar se o usuário já está logado usando AsyncStorage
     const checkLoggedInUser = async () => {
       const loggedInUser = await AsyncStorage.getItem('loggedInUser');
 
@@ -117,7 +139,6 @@ const LoginScreen = () => {
     checkLoginExpiration();
   }, []);
 
-
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#1976D2" barStyle="light-content" />
@@ -127,7 +148,6 @@ const LoginScreen = () => {
         <View style={styles.inputBox}>
           <TextInput
             placeholder="Digite seu email"
-            value={email}
             onChangeText={setEmail}
             style={styles.input}
           />
@@ -139,7 +159,6 @@ const LoginScreen = () => {
         <View style={styles.passwordInputBox}>
           <TextInput
             placeholder="Digite sua senha"
-            value={password}
             onChangeText={setPassword}
             secureTextEntry={!showPassword}
             style={styles.input}
@@ -149,11 +168,6 @@ const LoginScreen = () => {
               style={styles.passwordVisibility}
               onPress={() => setShowPassword(!showPassword)}
             >
-              <FontAwesome
-                name={showPassword ? 'eye-slash' : 'eye'}
-                size={20}
-                color="black"
-              />
             </TouchableOpacity>
           )}
           <FontAwesome name="lock" size={20} color="black" style={styles.icon} />
@@ -179,14 +193,13 @@ const LoginScreen = () => {
             </TouchableOpacity>
           </View>
         </View>
-
       </View>
 
       <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
         <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
       <View style={styles.loginRegister}>
-        <Text>Já possui uma conta?{' '}</Text>
+        <Text>Ainda não possui uma conta?{' '}</Text>
         <TouchableOpacity onPress={handleRegister}>
           <Text style={styles.RegistroButtonText}>Registrar</Text>
         </TouchableOpacity>
@@ -219,15 +232,6 @@ const LoginScreen = () => {
   );
 };
 
-const api = [
-  {
-    email: 'joao@gmail.com',
-    password: 'joao123',
-    email: 'pedro@gmail.com',
-    password: 'pedro',
-  },
-];
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -236,15 +240,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#fae8b8',
   },
   header: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 40,
   },
   inputContainer: {
     width: '95%',
     marginBottom: 10,
     alignSelf: 'center',
-    shadowColor: '#000',
+    Color: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -381,8 +385,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   rememberMeContainer: {
-    flexDirection: 'row', // Altere de 'column' para 'row'
-    justifyContent: 'space-between', // Adicione este estilo
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
     alignItems: 'center',
     marginTop: 10,
   },  

@@ -27,8 +27,8 @@ const Motoristas = () => {
   const [caronaCheia, setCaronaCheia] = useState(false);
 
   const handleCreateCarpool = (carona) => {
-    setShowCreateCarpool(false);
-    setCaronaAceita(carona); 
+    setShowCreateCarpool(true);
+    setCaronaAceita(carona);
   };
 
   const handleCriarCarona = (carona) => {
@@ -44,15 +44,14 @@ const Motoristas = () => {
         if (numeroAceitacoes === 3) {
           setCaronaCheia(true);
         }
-      }, 1000); 
+      }, 1000);
     } else {
       alert('Carona cheia!');
     }
   };
 
   useEffect(() => {
-    // Your code to fetch driver data from a real API or storage
-    // For this example, we're using the mock data
+    // Código para buscar dados de motoristas de uma API ou armazenamento real
     setSelectedDriver(mockDriverData[0]);
   }, []);
 
@@ -69,27 +68,27 @@ const Motoristas = () => {
           <CreateCarpool onCaronaCriada={handleCriarCarona} />
         ) : (
           <>
-            {selectedDriver && (
-              <View style={styles.driverInfoContainer}>
+            {mockDriverData.map((item) => (
+              <View key={item.id} style={styles.driverInfoContainer}>
                 <View style={styles.informacoesCarona}>
                   <View style={styles.infoRow}>
                     <Text style={styles.label}>Nome:</Text>
-                    <Text style={styles.value}>{selectedDriver.name}</Text>
+                    <Text style={styles.value}>{item.name}</Text>
                   </View>
 
                   <View style={styles.infoRow}>
                     <Text style={styles.label}>Placa do Carro:</Text>
-                    <Text style={styles.value}>{selectedDriver.carPlate}</Text>
+                    <Text style={styles.value}>{item.carPlate}</Text>
                   </View>
 
                   <View style={styles.infoRow}>
                     <Text style={styles.label}>Destino:</Text>
-                    <Text style={styles.value}>{selectedDriver.caronaInfo.destino}</Text>
+                    <Text style={styles.value}>{item.caronaInfo.destino}</Text>
                   </View>
 
                   <View style={styles.infoRow}>
                     <Text style={styles.label}>Horário:</Text>
-                    <Text style={styles.value}>{selectedDriver.caronaInfo.horaPartida}</Text>
+                    <Text style={styles.value}>{item.caronaInfo.horaPartida}</Text>
                   </View>
                   {caronaAceita ? (
                     <Text>Carona Aceita!</Text>
@@ -106,7 +105,7 @@ const Motoristas = () => {
                   )}
                 </View>
               </View>
-            )}
+            ))}
           </>
         )}
       </ScrollView>
