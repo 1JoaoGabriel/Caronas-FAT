@@ -45,14 +45,14 @@ const LoginScreen = () => {
       };
 
       const requestOptions = {
-        method: 'POST', // Usando o método POST para enviar dados de login
+        method: 'POST', 
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(loginData), // Convertendo os dados para JSON
+        body: JSON.stringify(loginData), 
       };
 
-      const response = await fetch('http://127.0.0.1:8000/rides/login/', requestOptions);
+      const response = await fetch('http://10.0.2.2:8000/rides/api/profiles/', requestOptions);
 
       if (response.status === 200) {
         // Login bem-sucedido

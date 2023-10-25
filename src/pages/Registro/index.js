@@ -11,11 +11,13 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
+  Animated,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-// import axios from "axios";
+import axios from "axios";
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 const RegisterScreen = () => {
   const [username, setUsername] = useState('');
@@ -47,7 +49,9 @@ const RegisterScreen = () => {
   };
 
   const handleRegister = () => {
-    if (!username || !email || !password || !image) {
+    if (!username || !email || !password 
+      //|| !image
+      ) {
       
       setAlertMessage('Por favor, preencha todos os campos.');
       setShowAlert(true);
@@ -55,7 +59,35 @@ const RegisterScreen = () => {
       setAlertMessage('Você precisa aceitar os termos e condições.');
       setShowAlert(true);
     } else {
-        fetchData();
+  //     const dados = {
+  //             senha: password,
+  //             nome: username,
+  //             email: email,
+  //             diretorio: image,
+  //             user: 1,
+  //             placa_carro: "",
+  //             cnh: null,
+  //           };
+      
+  //     axios.post('http://127.0.0.1:8000/rides/api/profiles/', dados)
+  // .then((response) => {
+  //   // Lógica de sucesso
+  //   console.log('Resposta bem-sucedida:', response.data);
+  // })
+  // .catch((error) => {
+  //   if (error.response) {
+  //     // O servidor respondeu com um código de erro
+  //     console.error('Erro de resposta do servidor:', error.response.data);
+  //   } else if (error.request) {
+  //     // A solicitação foi feita, mas não houve resposta do servidor
+  //     console.error('Sem resposta do servidor:', error.request);
+  //   } else {
+  //     // Ocorreu um erro durante a configuração da solicitação
+  //     console.error('Erro ao configurar a solicitação:', error.message);
+  //   }
+  // });
+
+         fetchData();
       
       setAlertMessage('Registro bem-sucedido. Você pode fazer login agora.');
       setShowAlert(true);
@@ -64,14 +96,14 @@ const RegisterScreen = () => {
 
   const fetchData = async () => {
     try {
-      const apiUrl = 'http://127.0.0.1:8000/rides/api/profiles/';
+      const apiUrl = 'http://10.0.2.2:8000/rides/api/profiles/';
       
       const userData = {
         senha: password,
-        nome: "Joao",
+        nome: username,
         email: email,
         diretorio: image,
-        user: 4,
+        user: 1,
         placa_carro: "",
         cnh: null,
       };      
@@ -99,25 +131,7 @@ const RegisterScreen = () => {
       catch (error) {
         console.error('Erro ao fazer a solicitação à API:', error);
     }
-  //   const profile_new = {
-  //     nome: username,
-  //     diretorio: image,
-  //     email: email,
-  //     senha: password,
-  //     cnh: null,
-  //     placa_carro: "",
-  //     user: 4
-  // };
-  // axios.post('http://127.0.0.1:8000/rides/api/profiles/', profile_new, {
-  //     headers: {
-  //         'Content-Type': 'application/json'
-  //     }
-  // })
-  // .then ((response) => {
-  //   console.log(response);
-  // }) 
-
-  //   console.log()
+    console.log();
   };
 
   const closeAlert = () => {
@@ -140,15 +154,19 @@ const RegisterScreen = () => {
       <StatusBar backgroundColor="#1976D2" barStyle="light-content" />
       <View style={styles.imageContainer}>
           <Text style={styles.header}>Registro</Text>
-        <TouchableOpacity onPress={pickImage} style={styles.imageButton}>
-          {image ? (
-            <Image source={{ uri: image }} style={[styles.circularImage, styles.imageWithBorder]} />
-          ) : (
-            <Image
-              source={require('../../assets/sem_foto.png')} 
-              style={[styles.circularImage, styles.imageWithBorder]}
-            />
-          )}
+          <TouchableOpacity
+            onPress={pickImage}
+            style={styles.imageButton}
+            activeOpacity={0.7} // Feedback visual ao tocar no botão
+          >
+              {image ? (
+                <Image source={{ uri: image }} style={[styles.circularImage, styles.imageWithBorder]} />
+              ) : (
+                <Image
+                  source={require('../../assets/sem_foto.png')}
+                  style={[styles.circularImage, styles.imageWithBorder]}
+                />
+              )}
         </TouchableOpacity>
       </View>
       <View style={styles.inputContainer}>
@@ -188,6 +206,7 @@ const RegisterScreen = () => {
             style={styles.passwordVisibility}
             onPress={() => setShowPassword(!showPassword)}
             >
+            <FontAwesome5 name={showPassword ? 'eye' : 'eye-slash'} size={20} color="black" />
             </TouchableOpacity>
           )}
           <FontAwesome name="lock" size={24} color="black" style={styles.icon} />
@@ -202,13 +221,19 @@ const RegisterScreen = () => {
           <FontAwesome
             name={acceptedTerms ? 'check-square' : 'square-o'}
             size={24}
-            color="black"
+            color={acceptedTerms ? 'green' : 'black'}
             style={styles.checkBoxIcon}
           />
           <Text style={styles.checkBoxLabel}>Eu aceito os termos & condições</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity onPress={handleRegister} style={styles.registerButton}>
+
+      <TouchableOpacity
+        onPress={handleRegister}
+        style={styles.registerButton}
+        activeOpacity={0.7} 
+      >
+
         <Text style={styles.registerButtonText}>Registrar-se</Text>
       </TouchableOpacity>
 

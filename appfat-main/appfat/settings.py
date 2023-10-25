@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-mj+*bie@8*umnsc9^)$)y65!+@1+2(gvby$afqj=*5qdc)e11m
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['10.0.2.2', '127.0.0.1']
 
 
 # Application definition
@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'accounts',
     'rest_framework',
     'corsheaders'
-
 ]
 
 
@@ -58,11 +57,12 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8080",
+    "http://localhost:19006",
+    "http://10.100.14.174:8000"
     
 ]
 
-CORS_ALLOW_METHODS = (
+CORS_ALLOW_METHODS = ( 
     "DELETE",
     "GET",
     "OPTIONS",
@@ -70,6 +70,10 @@ CORS_ALLOW_METHODS = (
     "POST",
     "PUT",
 )
+CORS_ALLOW_HEADERS = [
+    'Authorization',
+    'Content-Type',
+]
 
 ROOT_URLCONF = 'appfat.urls'
 
@@ -133,7 +137,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-CORS_ALLOW_ALL_ORIGINS: True
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 # Static files (CSS, JavaScript, Images)
