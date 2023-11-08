@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Linking } from 'react-native';
+import axios from 'axios'; 
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -44,15 +45,11 @@ const LoginScreen = () => {
         password: password,
       };
 
-      const requestOptions = {
-        method: 'POST', 
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(loginData), 
-      };
-
-      const response = await fetch('http://10.0.2.2:8000/rides/api/profiles/', requestOptions);
+      const response = await axios.post('http://127.0.0.1:8000/rides/api/profiles/', loginData, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
       if (response.status === 200) {
         // Login bem-sucedido
@@ -61,7 +58,7 @@ const LoginScreen = () => {
 
         if (rememberMe) {
           // Guarde o token de autenticação no AsyncStorage
-          const responseData = await response.json();
+          const responseData = await response.data;
           await AsyncStorage.setItem('authToken', responseData.token);
         } else {
           await AsyncStorage.removeItem('authToken');

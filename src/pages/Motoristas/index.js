@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import CreateCarpool from '../CreateCarpool';
 
@@ -7,15 +7,18 @@ const mockDriverData = [
   {
     id: 1,
     name: 'João Gabriel',
+    cnhNumber: '12345678',
     carPlate: 'ABC123',
     caronaInfo: { destino: 'Uerj', horaPartida: '08:00 AM' },
+    imageURL: 'https://avatars.githubusercontent.com/u/112661311?v=4',
   },
   {
     id: 2,
-    name: 'Pedro',
+    name: 'Vahid',
     cnhNumber: '789012',
     carPlate: 'XYZ789',
     caronaInfo: { destino: 'Rodoviária Velha', horaPartida: '09:30 AM' },
+    imageURL: 'https://avatars.githubusercontent.com/u/21015148?v=4', 
   },
 ];
 
@@ -28,7 +31,7 @@ const Motoristas = () => {
 
   const handleCreateCarpool = (carona) => {
     setShowCreateCarpool(true);
-    setCaronaAceita(carona);
+    setCaronaAceita();
   };
 
   const handleCriarCarona = (carona) => {
@@ -55,6 +58,10 @@ const Motoristas = () => {
     setSelectedDriver(mockDriverData[0]);
   }, []);
 
+  const handleSelectDriver = (driver) => {
+    setSelectedDriver(driver);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -69,42 +76,53 @@ const Motoristas = () => {
         ) : (
           <>
             {mockDriverData.map((item) => (
-              <View key={item.id} style={styles.driverInfoContainer}>
-                <View style={styles.informacoesCarona}>
-                  <View style={styles.infoRow}>
-                    <Text style={styles.label}>Nome:</Text>
-                    <Text style={styles.value}>{item.name}</Text>
-                  </View>
+              <TouchableOpacity
+                key={item.id}
+                onPress={() => handleSelectDriver(item)}
+              >
+                <View style={styles.driverInfoContainer}>
+                  {selectedDriver === item && (
+                    <View style={styles.informacoesCarona}>
+                      <Image
+                        source={{ uri: item.imageURL }}
+                        style={styles.driverImage}
+                      />
+                      <View style={styles.infoRow}>
+                        <Text style={styles.label}>Nome:</Text>
+                        <Text style={styles.value}>{item.name}</Text>
+                      </View>
 
-                  <View style={styles.infoRow}>
-                    <Text style={styles.label}>Placa do Carro:</Text>
-                    <Text style={styles.value}>{item.carPlate}</Text>
-                  </View>
+                      <View style={styles.infoRow}>
+                        <Text style={styles.label}>Placa do Carro:</Text>
+                        <Text style={styles.value}>{item.carPlate}</Text>
+                      </View>
 
-                  <View style={styles.infoRow}>
-                    <Text style={styles.label}>Destino:</Text>
-                    <Text style={styles.value}>{item.caronaInfo.destino}</Text>
-                  </View>
+                      <View style={styles.infoRow}>
+                        <Text style={styles.label}>Destino:</Text>
+                        <Text style={styles.value}>{item.caronaInfo.destino}</Text>
+                      </View>
 
-                  <View style={styles.infoRow}>
-                    <Text style={styles.label}>Horário:</Text>
-                    <Text style={styles.value}>{item.caronaInfo.horaPartida}</Text>
-                  </View>
-                  {caronaAceita ? (
-                    <Text>Carona Aceita!</Text>
-                  ) : (
-                    <TouchableOpacity
-                      onPress={handleAceitarCarona}
-                      style={[styles.button, caronaCheia && styles.buttonDisabled]}
-                      disabled={caronaCheia}
-                    >
-                      <Text style={styles.buttonText}>
-                        {caronaCheia ? 'Carona Cheia' : 'Aceitar Carona'}
-                      </Text>
-                    </TouchableOpacity>
+                      <View style={styles.infoRow}>
+                        <Text style={styles.label}>Horário:</Text>
+                        <Text style={styles.value}>{item.caronaInfo.horaPartida}</Text>
+                      </View>
+                      {caronaAceita ? (
+                        <Text>Carona Aceita!</Text>
+                      ) : (
+                        <TouchableOpacity
+                          onPress={handleAceitarCarona}
+                          style={[styles.button, caronaCheia && styles.buttonDisabled]}
+                          disabled={caronaCheia}
+                        >
+                          <Text style={styles.buttonText}>
+                            {caronaCheia ? 'Carona Cheia' : 'Aceitar Carona'}
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
                   )}
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
           </>
         )}
@@ -182,6 +200,11 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontSize: 16,
+  },
+  driverImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
   },
 });
 
