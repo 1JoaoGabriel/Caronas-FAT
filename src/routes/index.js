@@ -7,7 +7,7 @@ import Registro from '../pages/Registro';
 import Dashbord from '../pages/Dashbord'; 
 import Motoristas from '../pages/Motoristas';
 import DriverInfo from '../pages/DriverInfo';
-import SolicitarCarona from '../pages/SolicitarCarona';
+//import SolicitarCarona from '../pages/SolicitarCarona';
 import CreateCarpool from '../pages/CreateCarpool';
 
 const Stack = createNativeStackNavigator();
@@ -48,11 +48,11 @@ export default function Routes() {
           component={Registro}
           options={{ headerShown: false }}
         />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="SolicitarCarona"
         component={SolicitarCarona}
         options={{ headerShown: false }}
-      />
+      /> */}
       <Stack.Screen
         name="CreateCarpool"
         component={CreateCarpool}

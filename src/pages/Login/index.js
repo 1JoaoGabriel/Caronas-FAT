@@ -32,6 +32,11 @@ const LoginScreen = () => {
   };
 
   const handleLogin = async () => {
+    const config = {
+      headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+    };
     if (!email || !password) {
       setAlertMessage('Por favor, preencha seu email e senha antes de fazer login.');
       setShowAlert(true);
@@ -45,34 +50,27 @@ const LoginScreen = () => {
         password: password,
       };
 
-      const response = await axios.post('http://127.0.0.1:8000/rides/api/profiles/', loginData, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+      const response = await axios.post('http://127.0.0.1:8000/api/auth/token/login/', loginData, config);
+      const auth_token = response.data.auth_token;
 
-      if (response.status === 200) {
-        // Login bem-sucedido
-        setAlertMessage('Login bem-sucedido.');
-        setShowAlert(true);
+      await AsyncStorage.setItem('auth_token', auth_token);
 
-        if (rememberMe) {
-          // Guarde o token de autenticação no AsyncStorage
-          const responseData = await response.data;
-          await AsyncStorage.setItem('authToken', responseData.token);
-        } else {
-          await AsyncStorage.removeItem('authToken');
+      const userDetails = await axios.get('http://127.0.0.1:8000/api/auth/users/me/', {
+        headers: {
+          Authorization: `Token ${auth_token}`
         }
+      });
 
-        navigation.navigate('DashbordAndMotoristas');
-      } else {
-        setAlertMessage('Email ou senha incorretos. Tente novamente.');
-        setShowAlert(true);
+      for (const chave in userDetails.data) {
+        if (userDetails.data.hasOwnProperty(chave)) {
+          const conteudo = userDetails.data[chave];
+          await AsyncStorage.setItem(chave, conteudo);
+        }
       }
-    } catch (error) {
-      console.error('Erro:', error);
-      setAlertMessage('Erro ao fazer login. Verifique seus dados e tente novamente.');
-      setShowAlert(true);
+      
+      navigation.navigate('DashboardAndMotoristas');
+    } catch (e) {
+      console.error(e);
     }
 
     setIsLoading(false);

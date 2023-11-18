@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import CreateCarpool from '../CreateCarpool';
+import axios from 'axios'; // Importe o Axios
 
 const mockDriverData = [
   {

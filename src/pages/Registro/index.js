@@ -11,12 +11,11 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
-  Animated,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import axios from "axios";
+import axios from 'axios';
 
 const RegisterScreen = () => {
   const [username, setUsername] = useState('');
@@ -27,6 +26,7 @@ const RegisterScreen = () => {
   const [alertMessage, setAlertMessage] = useState('');
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [re_password, setRePassword] = useState('');
 
   const navigation = useNavigation();
 
@@ -43,62 +43,52 @@ const RegisterScreen = () => {
     });
 
     if (!result.cancelled) {
-      setImage(result.assets[0].uri);
+      setImage(result.uri);
     }
   };
 
   const handleRegister = () => {
-    if (!username || !email || !password 
-      //|| !image
-      ) {
-      
+    const config = {
+      headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+    };
+    if (!username || !email || !password || !re_password) {
       setAlertMessage('Por favor, preencha todos os campos.');
+      setShowAlert(true);
+    } else if (password !== re_password) {
+      setAlertMessage('A senha e a confirmação de senha não coincidem.');
       setShowAlert(true);
     } else if (!acceptedTerms) {
       setAlertMessage('Você precisa aceitar os termos e condições.');
       setShowAlert(true);
     } else {
-      const dados = {
-              senha: password,
-              nome: username,
-              email: email,
-              diretorio: image,
-              user: 1,
-              placa_carro: "",
-              cnh: null,
-            };
-      
-      axios.post('http://127.0.0.1:8000/rides/api/profiles/', dados)
-  .then((response) => {
-    // Lógica de sucesso
-      console.log('Resposta bem-sucedida:', response.data);
-      setAlertMessage('Registro bem-sucedido. Você pode fazer login agora.');
-      setShowAlert(true);
-  })
-  .catch((error) => {
-    if (error.response) {
-      // O servidor respondeu com um código de erro
-      console.error('Erro de resposta do servidor:', error.response.data);
-    } else if (error.request) {
-      // A solicitação foi feita, mas não houve resposta do servidor
-      console.error('Sem resposta do servidor:', error.request);
-    } else {
-      // Ocorreu um erro durante a configuração da solicitação
-      console.error('Erro ao configurar a solicitação:', error.message);
-    }
-  });
+      const data = {
+        senha: password,
+        re_password: re_password,
+        nome: username,
+        email: email,
+        diretorio: image,
+        user: 1,
+        placa_carro: '',
+        cnh: null,
+      };
 
-         fetchData();
-      
+      axios
+        .post('http://127.0.0.1:8000/api/auth/users/', data, config)
+        .then((result) =>
+          alert('Email de ativação de conta enviado com sucesso! \nPara ativar sua conta, verifique seu email.')
+        )
+        .catch((error) => console.error(error));
     }
   };
 
   const closeAlert = () => {
     setShowAlert(false);
   };
-  
+
   const handleEmailChange = (e) => {
-    setEmail(e); 
+    setEmail(e);
   };
 
   const handlePasswordChange = (e) => {
@@ -170,6 +160,26 @@ const RegisterScreen = () => {
           <FontAwesome name="lock" size={24} color="black" style={styles.icon} />
         </View>
       </View>
+      <View style={styles.inputContainer}>
+  <Text style={styles.label}>Confirmar Senha</Text>
+  <View style={styles.inputBox}>
+    <TextInput
+      placeholder="Confirme sua senha"
+      onChangeText={(text) => setre_password(text)}
+      secureTextEntry={!showPassword}
+      style={styles.input}
+    />
+    {password.length > 0 && (
+      <TouchableOpacity
+        style={styles.passwordVisibility}
+        onPress={() => setShowPassword(!showPassword)}
+      >
+      </TouchableOpacity>
+    )}
+    <FontAwesome name="lock" size={24} color="black" style={styles.icon} />
+  </View>
+</View>
+
     
       <View style={styles.termsCheckBoxContainer}>
         <TouchableOpacity
@@ -179,7 +189,7 @@ const RegisterScreen = () => {
           <FontAwesome
             name={acceptedTerms ? 'check-square' : 'square-o'}
             size={24}
-            color={acceptedTerms ? 'green' : 'black'}
+            color={acceptedTerms ? 'black' : 'black'}
             style={styles.checkBoxIcon}
           />
           <Text style={styles.checkBoxLabel}>Eu aceito os termos & condições</Text>
